@@ -1,16 +1,18 @@
-# fantasy_run
+# Fantasy Run
+A group project in Flame/Flutter
 
-A new Flutter project.
+## OVERVIEW:
+An endless runner game with switching environments, evolving enemies, and changing maps. 
+The player controls acharacter (knight) running through endless terrain where landscapes 
+shifts based on progress, building an immersive experience.
+With movement across floating platforms, and combating enemies, the player must evade
+enemies and adapt to increasingly challenging conditions as the game progresses.
 
-## Getting Started
+## Tools
+- Flutter
+- Flame
+- Firebase
+- TILED
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How to run
+...
