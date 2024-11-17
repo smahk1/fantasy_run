@@ -4,15 +4,24 @@ import 'dart:ui';
 
 // Importing Flame packages for game components and functionality
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
 
 // The main game class extends FlameGame, which provides the game loop
-class FantasyRun extends FlameGame {
-  // Declare a player variable to hold the animated character component
+// It also uses the TapDetector mixin for handling tap input events
+class FantasyRun extends FlameGame with TapDetector {
+  // Declare a variable to hold the animated character component
   late SpriteAnimationComponent player;
 
-  // The onLoad method initializes the game components when the game starts
+  // Boolean to check if the player is currently jumping
+  bool isJumping = false;
+
+  // Physics-related variables for jump mechanics
+  double jumpVelocity = -200; // Initial upward velocity for the jump
+  double gravity = 400; // Gravitational force pulling the character down
+
+  // The onLoad method is called when the game initializes and is used to load assets
   @override
   FutureOr<void> onLoad() async {
     super.onLoad(); // Call the parent class's onLoad method
@@ -20,30 +29,29 @@ class FantasyRun extends FlameGame {
     // ============================
     // Load and Add Parallax Background
     // ============================
-    // The parallax background consists of multiple layers that move at different speeds
+    // The parallax background creates a scrolling effect with multiple layers
     final parallax = await loadParallaxComponent(
       [
-        // Define the image layers for the parallax effect
+        // List of image layers for the background
         ParallaxImageData('plx-1.png'),
         ParallaxImageData('plx-2.png'),
         ParallaxImageData('plx-3.png'),
         ParallaxImageData('plx-4.png'),
         ParallaxImageData('plx-5.png'),
-        ParallaxImageData('plx-6.png', fill: LayerFill.none),
       ],
-      // The base velocity controls the scrolling speed of the layers
+      // The base velocity determines how fast the layers scroll
       baseVelocity: Vector2(40, 0),
-      // Layers further back move slower than those closer to the front
+      // Layers farther in the background move slower (parallax effect)
       velocityMultiplierDelta: Vector2(1.5, 1),
     );
 
-    // Now Add the parallax background to the game
+    // Add the parallax background to the game
     add(parallax);
 
     // ============================
     // Load and Add Character Animation
     // ============================
-    // List of file names for the running animation frames
+    // List of file names for the running charcter animation frames
     final framePaths = [
       'run_frame_1.png',
       'run_frame_2.png',
@@ -57,37 +65,64 @@ class FantasyRun extends FlameGame {
 
     // Load all the frames into a list of Sprite objects
     final spriteFrames = await Future.wait(framePaths.map((path) async {
-      final image = await images.load(path);
-      return Sprite(image);
+      final image = await images.load(path); // Load each frame as an image
+      return Sprite(image); // Convert the image to a Sprite
     }));
 
-    // Create an animation using the loaded frames
+    // Create a sprite animation using the loaded frames
     final spriteAnimation = SpriteAnimation.spriteList(
       spriteFrames,
-      stepTime: 0.1, // Duration of each frame
+      stepTime:
+          0.1, // Duration of each frame (controls the speed of the animation)
     );
 
     // Create the player component with the animation
     player = SpriteAnimationComponent()
       ..animation = spriteAnimation // Assign the animation to the player
-      ..size = Vector2(64, 64) // Set character size
-      ..position = Vector2(100, size.y - 100); // Fixed position
+      ..size = Vector2(64, 64) // Set the size of the character
+      ..position =
+          Vector2(100, size.y - 120); // Position the character on the screen
 
-    // Add the player to the game
+    // Add the player component to the game
     add(player);
   }
 
-  // The update method is called every frame to update game logic
+  // The update method is called every frame to update the game state
   @override
   void update(double dt) {
     super.update(dt); // Call the parent class's update method
-    // Add logic to update game objects (e.g., moving obstacles) here
+
+    // Handle jump mechanics
+    if (isJumping) {
+      // Update the vertical position based on the current velocity
+      player.position.y += jumpVelocity * dt;
+
+      // Apply gravity to reduce the upward velocity and eventually bring the player down
+      jumpVelocity += gravity * dt;
+
+      // Stop the jump when the player reaches the ground
+      if (player.position.y >= size.y - 120) {
+        player.position.y = size.y - 120; // Reset the position to ground level
+        isJumping = false; // Mark the jump as completed
+        jumpVelocity = -200; // Reset the jump velocity for the next jump
+      }
+    }
   }
 
-  // The render method is called every frame to draw game objects
+  // dt ensures that the vertical behaviour of the character is normalized across high or low frame rate devices, providing same amount of movement over time t.
+
+  // The onTap method is triggered whenever the player taps the screen
+  @override
+  void onTap() {
+    if (!isJumping) {
+      isJumping = true; // Start a jump if the player is not already jumping
+    }
+  }
+
+  // The render method is called every frame to draw the game objects on the screen
   @override
   void render(Canvas canvas) {
     super.render(canvas); // Call the parent class's render method
-    // Add logic to draw additional game objects here
+    // Additional rendering logic can be added here if needed
   }
 }
