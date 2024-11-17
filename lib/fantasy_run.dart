@@ -1,12 +1,14 @@
 // Importing core Dart libraries for asynchronous programming and UI rendering
 import 'dart:async';
 import 'dart:ui';
+import 'dart:math';
 
 // Importing Flame packages for game components and functionality
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
+import 'components/obstacle.dart'; // Import the obstacle class
 
 // The main game class extends FlameGame, which provides the game loop
 // It also uses the TapDetector mixin for handling tap input events
@@ -20,6 +22,9 @@ class FantasyRun extends FlameGame with TapDetector {
   // Physics-related variables for jump mechanics
   double jumpVelocity = -200; // Initial upward velocity for the jump
   double gravity = 400; // Gravitational force pulling the character down
+
+  late SpriteAnimation obstacleAnimation; // Define obstacleAnimation properly
+  final Random random = Random(); // Define random properly as a private field
 
   // The onLoad method is called when the game initializes and is used to load assets
   @override
@@ -79,12 +84,43 @@ class FantasyRun extends FlameGame with TapDetector {
     // Create the player component with the animation
     player = SpriteAnimationComponent()
       ..animation = spriteAnimation // Assign the animation to the player
-      ..size = Vector2(64, 64) // Set the size of the character
+      ..size = Vector2(100, 100) // Set the size of the character
       ..position =
-          Vector2(100, size.y - 120); // Position the character on the screen
+          Vector2(100, size.y - 150); // Position the character on the screen
 
     // Add the player component to the game
     add(player);
+
+    // ============================
+    // Load and Add Obstacle Animation
+    // ============================
+
+    final obstacleFrames = [
+      await images.load('rock-1.png'),
+      await images.load('rock-2.png'),
+    ];
+    obstacleAnimation = SpriteAnimation.spriteList(
+      obstacleFrames.map((image) => Sprite(image)).toList(),
+      stepTime: 0.5,
+    );
+
+    // Start spawning obstacles
+    _spawnObstacles();
+  }
+// --------------
+
+  // Custom periodic execution method for spawning obstacles
+  void _spawnObstacles() async {
+    while (true) {
+      await Future.delayed(const Duration(seconds: 2)); // Delay for 2 seconds
+      final position = Vector2(size.x, size.y - 90);
+      final speed = 400 + random.nextDouble() * 50; // Randomize speed
+      add(Obstacle(
+        animation: obstacleAnimation,
+        position: position,
+        speed: speed,
+      ));
+    }
   }
 
   // The update method is called every frame to update the game state
@@ -101,8 +137,8 @@ class FantasyRun extends FlameGame with TapDetector {
       jumpVelocity += gravity * dt;
 
       // Stop the jump when the player reaches the ground
-      if (player.position.y >= size.y - 120) {
-        player.position.y = size.y - 120; // Reset the position to ground level
+      if (player.position.y >= size.y - 150) {
+        player.position.y = size.y - 150; // Reset the position to ground level
         isJumping = false; // Mark the jump as completed
         jumpVelocity = -200; // Reset the jump velocity for the next jump
       }
