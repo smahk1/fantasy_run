@@ -17,8 +17,8 @@ class FantasyRun extends FlameGame with TapDetector {
   // Declare a variable to hold the animated character component
   late SpriteAnimationComponent player;
 
-  // The score variable to store the score value
-  int score = 0;
+  int score = 0; // The score
+  double elapsedTime = 0.0; // Tracks time for score updates
 
   // Boolean to check if the player is currently jumping
   bool isJumping = false;
@@ -133,11 +133,14 @@ class FantasyRun extends FlameGame with TapDetector {
   void update(double dt) {
     super.update(dt); // Call the parent class's update method
 
-    void increaseScore() {
-      score += 2;
-    }
+    // Increment the elapsed time
+    elapsedTime += dt;
 
-    increaseScore();
+    // Increase the score every second (or adjust to your desired rate)
+    if (elapsedTime >= 1.0) {
+      score += 10; // Add 10 points per second
+      elapsedTime = 0.0; // Reset the timer
+    }
     // Handle jump mechanics
     if (isJumping) {
       // Update the vertical position based on the current velocity
