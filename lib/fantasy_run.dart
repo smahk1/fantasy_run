@@ -8,6 +8,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
+import 'package:flutter/material.dart';
 import 'components/obstacle.dart'; // Import the obstacle class
 
 // The main game class extends FlameGame, which provides the game loop
@@ -15,6 +16,9 @@ import 'components/obstacle.dart'; // Import the obstacle class
 class FantasyRun extends FlameGame with TapDetector {
   // Declare a variable to hold the animated character component
   late SpriteAnimationComponent player;
+
+  // The score variable to store the score value
+  int score = 0;
 
   // Boolean to check if the player is currently jumping
   bool isJumping = false;
@@ -25,11 +29,12 @@ class FantasyRun extends FlameGame with TapDetector {
 
   late SpriteAnimation obstacleAnimation; // Define obstacleAnimation properly
   final Random random = Random(); // Define random properly as a private field
-
   // The onLoad method is called when the game initializes and is used to load assets
   @override
   FutureOr<void> onLoad() async {
     super.onLoad(); // Call the parent class's onLoad method
+
+    overlays.add('scoreOverlay');
 
     // ============================
     // Load and Add Parallax Background
@@ -128,6 +133,11 @@ class FantasyRun extends FlameGame with TapDetector {
   void update(double dt) {
     super.update(dt); // Call the parent class's update method
 
+    void increaseScore() {
+      score += 2;
+    }
+
+    increaseScore();
     // Handle jump mechanics
     if (isJumping) {
       // Update the vertical position based on the current velocity
