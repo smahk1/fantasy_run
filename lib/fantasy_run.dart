@@ -8,14 +8,15 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
 import 'components/obstacle.dart'; // Import the obstacle class
+import 'package:flutter/foundation.dart'; // Used for value notifiers
 
 // The main game class extends FlameGame, which provides the game loop
 // It also uses the TapDetector mixin for handling tap input events
 class FantasyRun extends FlameGame with TapDetector {
   // Declare a variable to hold the animated character component
   late SpriteAnimationComponent player;
+  ValueNotifier<int> score = ValueNotifier<int>(0); // The score
 
-  int score = 0; // The score
   double elapsedTime = 0.0; // Tracks time for score updates
 
   // Boolean to check if the player is currently jumping
@@ -136,9 +137,10 @@ class FantasyRun extends FlameGame with TapDetector {
 
     // Increase the score every second (or adjust to your desired rate)
     if (elapsedTime >= 1.0) {
-      score += 10; // Add 10 points per second
-      elapsedTime = 0.0; // Reset the timer
+      score.value += 10; // Update score dynamically
+      elapsedTime = 0.0; // Reset timer
     }
+
     // Handle jump mechanics
     if (isJumping) {
       // Update the vertical position based on the current velocity
@@ -166,3 +168,5 @@ class FantasyRun extends FlameGame with TapDetector {
     }
   }
 }
+
+
