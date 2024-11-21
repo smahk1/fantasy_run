@@ -18,6 +18,10 @@ class FantasyRun extends FlameGame with TapDetector {
   ValueNotifier<int> score = ValueNotifier<int>(0); // The score
 
   double elapsedTime = 0.0; // Tracks time for score updates
+  // Keeps a permanent track of the time for score increment
+  double timeTrack = 0.0;
+  double scoreIncrement = 100;
+  int increment = 100;
 
   // Boolean to check if the player is currently jumping
   bool isJumping = false;
@@ -134,11 +138,35 @@ class FantasyRun extends FlameGame with TapDetector {
 
     // Increment the elapsed time
     elapsedTime += dt;
+    timeTrack += dt;
+
+    switch (timeTrack) {
+      case 5.00:
+        {
+          scoreIncrement *= 1.1;
+        }
+      case 60:
+        {
+          scoreIncrement *= 1.3;
+        }
+      case 120:
+        {
+          scoreIncrement *= 1.5;
+        }
+      case 240:
+        {
+          scoreIncrement *= 1.5;
+        }
+      case 300:
+        {
+          scoreIncrement *= 1.7; 
+        }
+    }
 
     // Increase the score every second (or adjust to your desired rate)
     if (elapsedTime >= 1.0) {
-      score.value += 10; // Update score dynamically
-      elapsedTime = 0.0; // Reset timer
+      score.value += scoreIncrement.toInt(); // Update score dynamically
+      elapsedTime = 0.0;
     }
 
     // Handle jump mechanics
@@ -168,5 +196,3 @@ class FantasyRun extends FlameGame with TapDetector {
     }
   }
 }
-
-
