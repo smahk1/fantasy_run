@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:fantasy_run/fantasy_run.dart';
 import 'package:flame/game.dart';
 import 'package:flame/flame.dart';

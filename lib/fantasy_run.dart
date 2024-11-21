@@ -1,6 +1,5 @@
 // Importing core Dart libraries for asynchronous programming and UI rendering
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math';
 
 // Importing Flame packages for game components and functionality
@@ -8,7 +7,6 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
-import 'package:flutter/material.dart';
 import 'components/obstacle.dart'; // Import the obstacle class
 
 // The main game class extends FlameGame, which provides the game loop
@@ -166,12 +164,5 @@ class FantasyRun extends FlameGame with TapDetector {
     if (!isJumping) {
       isJumping = true; // Start a jump if the player is not already jumping
     }
-  }
-
-  // The render method is called every frame to draw the game objects on the screen
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas); // Call the parent class's render method
-    // Additional rendering logic can be added here if needed
   }
 }
