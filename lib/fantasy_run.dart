@@ -15,20 +15,21 @@ import 'package:flutter/foundation.dart'; // Used for value notifiers
 class FantasyRun extends FlameGame with TapDetector {
   // Declare a variable to hold the animated character component
   late SpriteAnimationComponent player;
+
+  /// All score related variables ///
+
   ValueNotifier<int> score = ValueNotifier<int>(0); // The score
 
-  double elapsedTime = 0.0; // Tracks time for score updates
-  // Keeps a permanent track of the time for score increment
-  double timeTrack = 0.0;
-  double scoreIncrement = 100;
-  int increment = 100;
+  double timeTrack = 0.00;
+  double timeStamp = 0;
+  double scoreSpeed = 0.1;
 
   // Boolean to check if the player is currently jumping
   bool isJumping = false;
 
   // Physics-related variables for jump mechanics
-  double jumpVelocity = -200; // Initial upward velocity for the jump
-  double gravity = 400; // Gravitational force pulling the character down
+  double jumpVelocity = -250; // Initial upward velocity for the jump
+  double gravity = 450; // Gravitational force pulling the character down
 
   late SpriteAnimation obstacleAnimation; // Define obstacleAnimation properly
   final Random random = Random(); // Define random properly as a private field
@@ -136,38 +137,19 @@ class FantasyRun extends FlameGame with TapDetector {
   void update(double dt) {
     super.update(dt); // Call the parent class's update method
 
-    // Increment the elapsed time
-    elapsedTime += dt;
     timeTrack += dt;
 
-    switch (timeTrack) {
-      case 5.00:
-        {
-          scoreIncrement *= 1.1;
-        }
-      case 60:
-        {
-          scoreIncrement *= 1.3;
-        }
-      case 120:
-        {
-          scoreIncrement *= 1.5;
-        }
-      case 240:
-        {
-          scoreIncrement *= 1.5;
-        }
-      case 300:
-        {
-          scoreIncrement *= 1.7; 
-        }
+    // The goal is create a counter score display that displays the score being increased continuously.
+    if (timeTrack >= (timeStamp)) {
+      score.value += 1;
+      timeStamp += scoreSpeed;
     }
 
-    // Increase the score every second (or adjust to your desired rate)
-    if (elapsedTime >= 1.0) {
-      score.value += scoreIncrement.toInt(); // Update score dynamically
-      elapsedTime = 0.0;
-    }
+    /// In the future we will add some conditions to speed up the score
+    /// We will also account for any bonus score points to reward the player through this system
+    /// if(x){
+    ///   scoreSpeed -= 0.05; // This should speed up the score counter
+    /// }
 
     // Handle jump mechanics
     if (isJumping) {

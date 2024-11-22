@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fantasy_run/fantasy_run.dart'; // Import your game class
 
-Map<String, Widget Function(BuildContext, FantasyRun)> overlayBuilderMap = {
+Map<String, Widget Function(BuildContext, FantasyRun)> ui = {
   'scoreOverlay': (context, game) {
     return Positioned(
       top: 20,
       right: 30,
       child: ValueListenableBuilder<int>(
+        /// Score display
         // Value of score is tracked here and upon changes the widget is rebuilt accordingly
         valueListenable: game.score,
         builder: (context, score, child) {
@@ -29,6 +30,4 @@ Map<String, Widget Function(BuildContext, FantasyRun)> overlayBuilderMap = {
       ),
     );
   },
-
-  // Other overlays can be defined here
 };

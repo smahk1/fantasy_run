@@ -15,6 +15,6 @@ void main() {
   // recreate game every time a change is made instead of hot restarting[for testing] -- disbale when not in testing
   runApp(GameWidget(
     game: kDebugMode ? FantasyRun() : game,
-    overlayBuilderMap: overlayBuilderMap,
+    overlayBuilderMap: ui,
   ));
 }
