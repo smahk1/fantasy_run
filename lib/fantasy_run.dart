@@ -1,20 +1,28 @@
 // Importing core Dart libraries for asynchronous programming and UI rendering
 import 'dart:async';
-import 'dart:ui';
 import 'dart:math';
+import 'package:flutter/material.dart';
 
 // Importing Flame packages for game components and functionality
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/parallax.dart';
-import 'components/obstacle.dart'; // Import the obstacle class
+import 'package:flame/collisions.dart';
+
+import 'components/obstacle.dart';
 
 // The main game class extends FlameGame, which provides the game loop
 // It also uses the TapDetector mixin for handling tap input events
-class FantasyRun extends FlameGame with TapDetector {
+class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
   // Declare a variable to hold the animated character component
   late SpriteAnimationComponent player;
+  // variable for holding the sprite for obstacles
+  late Sprite obstacleSprite;
+
+  // Score Variables
+  int score = 0;
+  late TextComponent scoreText; // text component to display the score.
 
   // Boolean to check if the player is currently jumping
   bool isJumping = false;
@@ -86,41 +94,51 @@ class FantasyRun extends FlameGame with TapDetector {
       ..animation = spriteAnimation // Assign the animation to the player
       ..size = Vector2(100, 100) // Set the size of the character
       ..position =
-          Vector2(100, size.y - 150); // Position the character on the screen
+          Vector2(100, size.y - 150) // Position the character on the screen
+      ..add(RectangleHitbox()); // hitbox for detecting collisions
 
     // Add the player component to the game
     add(player);
 
     // ============================
-    // Load and Add Obstacle Animation
+    // Load Obstacle Sprite
     // ============================
+    final obstacleImage = await images.load('rock-1.png');
+    obstacleSprite = Sprite(obstacleImage);
 
-    final obstacleFrames = [
-      await images.load('rock-1.png'),
-      await images.load('rock-2.png'),
-    ];
-    obstacleAnimation = SpriteAnimation.spriteList(
-      obstacleFrames.map((image) => Sprite(image)).toList(),
-      stepTime: 0.5,
+    // ==========================
+    // Add Obstacle Spawner Timer
+    // ==========================
+    add(
+      TimerComponent(
+        period: 2, // Spawn obstacles every 2 seconds
+        repeat: true,
+        onTick: () => spawnObstacle(),
+      ),
     );
 
-    // Start spawning obstacles
-    _spawnObstacles();
+    // ============================
+    // Add TextComponent for Score
+    // ============================
+
+    scoreText = TextComponent(
+        text: 'Score: 0',
+        textRenderer: TextPaint(
+          style: const TextStyle(
+              fontSize: 30.0, fontFamily: 'arcadeclassic', color: Colors.white),
+        ),
+        position: Vector2(size.x - 200, 20));
+
+    add(scoreText);
   }
 // --------------
 
-  // Custom periodic execution method for spawning obstacles
-  void _spawnObstacles() async {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 2)); // Delay for 2 seconds
-      final position = Vector2(size.x, size.y - 90);
-      final speed = 400 + random.nextDouble() * 50; // Randomize speed
-      add(Obstacle(
-        animation: obstacleAnimation,
-        position: position,
-        speed: speed,
-      ));
-    }
+  // Method to spawn a new obstacle
+  void spawnObstacle() {
+    final obstacle = Obstacle(sprite: obstacleSprite)
+      ..position = Vector2(size.x, size.y - 90) // Start at the far-right edge
+      ..size = Vector2(40, 40);
+    add(obstacle);
   }
 
   // The update method is called every frame to update the game state
@@ -143,9 +161,14 @@ class FantasyRun extends FlameGame with TapDetector {
         jumpVelocity = -200; // Reset the jump velocity for the next jump
       }
     }
+
+    // score updates based on time elapsed
+    score += (dt * 100).toInt(); // Increment score over time
+    // print(dt);
+    scoreText.text = 'Score: $score'; // Update the score text
   }
 
-  // dt ensures that the vertical behaviour of the character is normalized across high or low frame rate devices, providing same amount of movement over time t.
+  // dt time ensures that the behaviour wrt time is normalized across high or low frame rate devices, providing same amount of changes/updates over time t.
 
   // The onTap method is triggered whenever the player taps the screen
   @override
