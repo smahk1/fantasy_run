@@ -10,13 +10,14 @@ import 'package:flame/parallax.dart';
 import 'components/obstacle.dart'; // Import the obstacle class
 import 'package:flutter/foundation.dart'; // Used for value notifiers
 
-// The main game class extends FlameGame, which provides the game loop
-// It also uses the TapDetector mixin for handling tap input events
+// Using the TapDetector mixin for handling tap input events
 class FantasyRun extends FlameGame with TapDetector {
-  // Declare a variable to hold the animated character component
+  // Varaible to hold animatied character components
   late SpriteAnimationComponent player;
 
+  ///=============================///
   /// All score related variables ///
+  ///=============================///
 
   ValueNotifier<int> score = ValueNotifier<int>(0); // The score
 
@@ -24,15 +25,26 @@ class FantasyRun extends FlameGame with TapDetector {
   double timeStamp = 0;
   double scoreSpeed = 0.1;
 
-  // Boolean to check if the player is currently jumping
+  ///==============================///
+  /// All Health related variables ///
+  ///==============================///
+
+  bool isDead = false;
+  int health = 1;
+
+  ///================================///
+  /// All Movement related variables ///
+  ///================================///
+
   bool isJumping = false;
 
   // Physics-related variables for jump mechanics
   double jumpVelocity = -250; // Initial upward velocity for the jump
-  double gravity = 450; // Gravitational force pulling the character down
+  double gravity = 450;
 
-  late SpriteAnimation obstacleAnimation; // Define obstacleAnimation properly
-  final Random random = Random(); // Define random properly as a private field
+  late SpriteAnimation obstacleAnimation;
+  final Random random = Random();
+
   // The onLoad method is called when the game initializes and is used to load assets
   @override
   FutureOr<void> onLoad() async {
@@ -40,32 +52,31 @@ class FantasyRun extends FlameGame with TapDetector {
 
     overlays.add('scoreOverlay');
 
-    // ============================
-    // Load and Add Parallax Background
-    // ============================
-    // The parallax background creates a scrolling effect with multiple layers
+    //==================================//
+    // Load and Add Parallax Background //
+    //==================================//
+
+    // List of image layers for the background
     final parallax = await loadParallaxComponent(
       [
-        // List of image layers for the background
         ParallaxImageData('plx-1.png'),
         ParallaxImageData('plx-2.png'),
         ParallaxImageData('plx-3.png'),
         ParallaxImageData('plx-4.png'),
         ParallaxImageData('plx-5.png'),
       ],
-      // The base velocity determines how fast the layers scroll
+      // Determines how fast the layers scroll
       baseVelocity: Vector2(40, 0),
       // Layers farther in the background move slower (parallax effect)
       velocityMultiplierDelta: Vector2(1.5, 1),
     );
 
-    // Add the parallax background to the game
     add(parallax);
 
-    // ============================
-    // Load and Add Character Animation
-    // ============================
-    // List of file names for the running charcter animation frames
+    //==================================//
+    // Load and Add Character Animation //
+    //==================================//
+
     final framePaths = [
       'run_frame_1.png',
       'run_frame_2.png',
@@ -116,7 +127,6 @@ class FantasyRun extends FlameGame with TapDetector {
     // Start spawning obstacles
     _spawnObstacles();
   }
-// --------------
 
   // Custom periodic execution method for spawning obstacles
   void _spawnObstacles() async {
