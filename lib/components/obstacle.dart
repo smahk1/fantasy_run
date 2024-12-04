@@ -1,9 +1,8 @@
-// Import Flame libraries for game components
 import 'package:flame/components.dart';
-// Import Flame libraries for collision components
 import 'package:flame/collisions.dart';
+import 'package:fantasy_run/fantasy_run.dart';
 
-class Obstacle extends SpriteComponent with CollisionCallbacks {
+class Obstacle extends SpriteComponent with CollisionCallbacks, HasGameRef {
   final double speed = 100; // Speed of the obstacle's horizontal movement
 
   Obstacle({required Sprite sprite}) {
@@ -15,12 +14,12 @@ class Obstacle extends SpriteComponent with CollisionCallbacks {
   void update(double dt) {
     super.update(dt);
 
-    // Move the obstacle left by reducing its x position based on speed
+    // Move the obstacle left by reducing its x position
     position.x -= speed * dt;
 
     // Remove the obstacle if it goes off-screen
     if (position.x + size.x < 0) {
-      removeFromParent(); // Remove this component from the game tree
+      removeFromParent();
     }
   }
 
@@ -30,8 +29,11 @@ class Obstacle extends SpriteComponent with CollisionCallbacks {
 
     // Handle collision with the player
     if (other is SpriteAnimationComponent) {
-      // player sprite turns red after collision
-      // print('collision');
+      // Access the game and reduce the player's lives
+      (gameRef as FantasyRun).lives.value -= 1;
+
+      // Remove the obstacle after a collision
+      removeFromParent();
     }
   }
 }

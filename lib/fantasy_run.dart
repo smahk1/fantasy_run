@@ -11,42 +11,41 @@ import 'components/obstacle.dart';
 
 class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
   //======================//
-  // CORE LOGIC VAIRABLES //
+  // CORE LOGIC VARIABLES //
   //======================//
 
   // Variables that store sprites
   late SpriteAnimationComponent player;
   late Sprite obstacleSprite;
-  late SpriteAnimation obstacleAnimation;
+
+  // Used for random obstacle/enemy spawns
   final Random random = Random();
 
-  // Score varaiables
-
+  // Score and lives variables
   ValueNotifier<int> score = ValueNotifier<int>(0);
+  ValueNotifier<int> lives = ValueNotifier<int>(3);
+
+  // Game state variables
+  bool isGameRunning = false;
 
   double timeTrack = 0.00;
   double timeStamp = 0;
   double scoreSpeed = 0.1;
 
-  /// Movement related variables
-
+  // Movement-related variables
   bool isJumping = false;
-
-  // Physics-related variables for jump mechanics
   double jumpVelocity = -250; // Initial upward velocity for the jump
   double gravity = 450;
 
   @override
   FutureOr<void> onLoad() async {
     super.onLoad();
-    // All UI elements (menu and others will be added later when they are built)
 
-    overlays.add('score');
+    overlays.add('startMenu'); // Show start menu overlay initially
 
     //==================================//
     // Load and Add Parallax Background //
     //==================================//
-
     final parallax = await loadParallaxComponent(
       [
         ParallaxImageData('plx-1.png'),
@@ -55,18 +54,14 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
         ParallaxImageData('plx-4.png'),
         ParallaxImageData('plx-5.png'),
       ],
-      // Determines how fast the layers scroll
       baseVelocity: Vector2(40, 0),
-      // Layers farther in the background move slower (parallax effect)
       velocityMultiplierDelta: Vector2(1.5, 1),
     );
-
     add(parallax);
 
     //===================================//
     // Load and Add Character Animations //
     //===================================//
-
     final framePaths = [
       'run_frame_1.png',
       'run_frame_2.png',
@@ -77,29 +72,19 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
       'run_frame_7.png',
       'run_frame_8.png',
     ];
-
-    // Load all the frames into a list of Sprite objects
     final spriteFrames = await Future.wait(framePaths.map((path) async {
-      final image = await images.load(path); // Load each frame as an image
-      return Sprite(image); // Convert the image to a Sprite
+      final image = await images.load(path);
+      return Sprite(image);
     }));
-
-    // Create a sprite animation using the loaded frames
     final spriteAnimation = SpriteAnimation.spriteList(
       spriteFrames,
-      stepTime:
-          0.1, // Duration of each frame (controls the speed of the animation)
+      stepTime: 0.1,
     );
-
-    // Create the player component with the animation
     player = SpriteAnimationComponent()
-      ..animation = spriteAnimation // Assign the animation to the player
-      ..size = Vector2(100, 100) // Set the size of the character
-      ..position =
-          Vector2(100, size.y - 150) // Position the character on the screen
-      ..add(RectangleHitbox()); // hitbox for detecting collisions
-
-    // Add the player component to the game
+      ..animation = spriteAnimation
+      ..size = Vector2(100, 100)
+      ..position = Vector2(100, size.y - 150)
+      ..add(RectangleHitbox());
     add(player);
 
     // ============================
@@ -113,7 +98,7 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
     // ==========================
     add(
       TimerComponent(
-        period: 2, // Spawn obstacles every 2 seconds
+        period: 2,
         repeat: true,
         onTick: () => spawnObstacle(),
       ),
@@ -122,55 +107,107 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
 
   @override
   void update(double dt) {
-    super.update(dt);
+    if (!isGameRunning) return;
 
+    super.update(dt);
     timeTrack += dt;
 
-    // The goal is create a counter score display that displays the score being increased continuously.
     if (timeTrack >= (timeStamp)) {
       score.value += 1;
       timeStamp += scoreSpeed;
     }
 
-    /// In the future we will add some conditions to speed up the score
-    /// We will also account for any bonus score points to reward the player through this system
-    /// if(x){
-    ///   scoreSpeed -= 0.05; // This should speed up the score counter
-    /// }
-
-    // Handle jump mechanics
     if (isJumping) {
-      // Update the vertical position based on the current velocity
       player.position.y += jumpVelocity * dt;
-
-      // Apply gravity to reduce the upward velocity and eventually bring the player down
       jumpVelocity += gravity * dt;
-
-      // Stop the jump when the player reaches the ground
       if (player.position.y >= size.y - 150) {
-        player.position.y = size.y - 150; // Reset the position to ground level
-        isJumping = false; // Mark the jump as completed
-        jumpVelocity = -200; // Reset the jump velocity for the next jump
+        player.position.y = size.y - 150;
+        isJumping = false;
+        jumpVelocity = -250;
       }
+    }
+
+    // End the game if lives reach 0
+    if (lives.value <= 0) {
+      endGame();
     }
   }
 
   @override
   void onTap() {
-    if (!isJumping) {
-      isJumping = true; // Start a jump if the player is not already jumping
-    }
+    if (!isGameRunning || isJumping) return;
+
+    isJumping = true;
   }
 
-  //====================//
-  // Game Logic Methods //
-  //====================//
-
-  // Method to spawn a new obstacle
   void spawnObstacle() {
+    if (!isGameRunning) return;
+
     final obstacle = Obstacle(sprite: obstacleSprite)
-      ..position = Vector2(size.x, size.y - 90) // Start at the far-right edge
+      ..position = Vector2(size.x, size.y - 90)
       ..size = Vector2(40, 40);
     add(obstacle);
+  }
+
+  // Start the game
+  void startGame() {
+    overlays.remove('startMenu'); // Remove start menu
+    overlays.add('score'); // Add score overlay
+    overlays.add('health'); // Add health overlay
+    isGameRunning = true;
+    score.value = 0; // Reset score
+    lives.value = 3; // Reset lives
+  }
+
+  // Pause the game
+  void pauseGame() {
+    isGameRunning = false; // Pause game updates
+    overlays.add('pauseMenu'); // Show pause menu
+  }
+
+  // Resume the game
+  void resumeGame() {
+    overlays.remove('pauseMenu'); // Remove pause menu
+    isGameRunning = true; // Resume game updates
+  }
+
+  // End the game
+  void endGame() {
+    isGameRunning = false; // Stop game updates
+    overlays.remove('score'); // Remove score overlay
+    overlays.remove('health'); // Remove health overlay
+    overlays.add('gameOver'); // Show game over overlay
+  }
+
+  // Restart the game
+  void restartGame() {
+    overlays.remove('gameOver'); // Remove game over overlay
+    startGame(); // Restart the game
+  }
+
+  // Return to home screen
+  void returnToHome() {
+    overlays.remove('gameOver'); // Remove game over overlay
+    overlays.add('startMenu'); // Show start menu overlay
+  }
+
+  void resetGame() {
+    // Reset score and lives
+    score.value = 0;
+    lives.value = 3;
+
+    // Remove the player and any other components (e.g., obstacles)
+    remove(player); // Remove the player
+    children.whereType<Obstacle>().forEach(remove); // Remove all obstacles
+
+    // Reinitialize the game state
+    onLoad();
+
+    // Show the start menu overlay
+    overlays.add('startMenu');
+    overlays.remove('pauseMenu');
+
+    // Set game state to not running
+    isGameRunning = false;
   }
 }
