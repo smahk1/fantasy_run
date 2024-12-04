@@ -73,7 +73,8 @@ flutter:
     - assets/images/plx-4.png
     - assets/images/plx-5.png
     - assets/audio/
-
+    - assets/images/health.png
+    - assets/images/background.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
