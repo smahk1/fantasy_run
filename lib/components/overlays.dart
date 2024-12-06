@@ -50,26 +50,181 @@ final Map<String, Widget Function(BuildContext, Game)> overlays = {
       ),
     );
   },
+
+  'signIn': (context, game) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        width: 300,
+        height: 350,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Sign In',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.white,
+                fontFamily: 'arcadeclassic',
+              ),
+            ),
+            const SizedBox(height: 20),
+            const TextField(
+              decoration: InputDecoration(
+                hintText: 'Email',
+                hintStyle: TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const TextField(
+              decoration: InputDecoration(
+                hintText: 'Password',
+                hintStyle: TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => const AlertDialog(
+                    content: Text(
+                      'You have signed in successfully!',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Sign In'),
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+
+  // Sign Up Overlay
+  'signUp': (context, game) {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        width: 300,
+        height: 350,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Sign Up',
+              style: TextStyle(
+                fontSize: 24,
+                color: Colors.white,
+                fontFamily: 'arcadeclassic',
+              ),
+            ),
+            const SizedBox(height: 20),
+            const TextField(
+              decoration: InputDecoration(
+                hintText: 'Email',
+                hintStyle: TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            const TextField(
+              decoration: InputDecoration(
+                hintText: 'Password',
+                hintStyle: TextStyle(color: Colors.grey),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+              ),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => const AlertDialog(
+                    content: Text(
+                      'You have registered successfully!',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Register'),
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+
   'startMenu': (context, game) {
     final FantasyRun fantasyRun = game as FantasyRun;
 
     return Stack(
       children: [
         Image.asset(
-          'assets/images/background.png', // Add your background image here
+          'assets/images/background.png',
           fit: BoxFit.cover,
           width: double.infinity,
           height: double.infinity,
         ),
         Center(
-          child: ElevatedButton(
-            onPressed: () {
-              fantasyRun.startGame(); // Start the game
-            },
-            child: const Text(
-              'Play',
-              style: TextStyle(fontSize: 24, fontFamily: 'arcadeclassic'),
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  fantasyRun.startGame();
+                },
+                child: const Text(
+                  'Play',
+                  style: TextStyle(fontSize: 24, fontFamily: 'arcadeclassic'),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  fantasyRun.overlays.add('signIn'); // Show Sign In overlay
+                  fantasyRun.overlays.remove('startMenu');
+                },
+                child: const Text(
+                  'Sign In',
+                  style: TextStyle(fontSize: 24, fontFamily: 'arcadeclassic'),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  fantasyRun.overlays.add('signUp'); // Show Sign Up overlay
+                  fantasyRun.overlays.remove('startMenu');
+                },
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(fontSize: 24, fontFamily: 'arcadeclassic'),
+                ),
+              ),
+            ],
           ),
         ),
       ],
