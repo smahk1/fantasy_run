@@ -27,15 +27,15 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
 
   // Game state variables
   bool isGameRunning = false;
-
   double timeTrack = 0.00;
   double timeStamp = 0;
   double scoreSpeed = 0.1;
 
   // Movement-related variables
   bool isJumping = false;
-  double jumpVelocity = -250; // Initial upward velocity for the jump
-  double gravity = 450;
+  int jumpCount = 0; // To track the number of jumps
+  double jumpVelocity = -500; // Upward velocity for each jump
+  double gravity = 800; // Gravity pulling the player down
 
   @override
   FutureOr<void> onLoad() async {
@@ -54,7 +54,7 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
         ParallaxImageData('plx-4.png'),
         ParallaxImageData('plx-5.png'),
       ],
-      baseVelocity: Vector2(40, 0),
+      baseVelocity: Vector2(60, 0),
       velocityMultiplierDelta: Vector2(1.5, 1),
     );
     add(parallax);
@@ -83,7 +83,8 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
     player = SpriteAnimationComponent()
       ..animation = spriteAnimation
       ..size = Vector2(100, 100)
-      ..position = Vector2(100, size.y - 150)
+      ..position = Vector2(100, size.y - 40)
+      ..anchor = Anchor.bottomLeft
       ..add(RectangleHitbox());
     add(player);
 
@@ -117,13 +118,17 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
       timeStamp += scoreSpeed;
     }
 
+    // Jump mechanics
     if (isJumping) {
       player.position.y += jumpVelocity * dt;
       jumpVelocity += gravity * dt;
-      if (player.position.y >= size.y - 150) {
-        player.position.y = size.y - 150;
-        isJumping = false;
-        jumpVelocity = -250;
+
+      // Reset to ground level and allow jumping again when player lands
+      if (player.position.y >= size.y - 40) {
+        player.position.y = size.y - 40; // Reset to ground level
+        isJumping = false; // Stop jumping
+        jumpCount = 0; // Reset jump count
+        jumpVelocity = -500; // Reset jump velocity
       }
     }
 
@@ -137,26 +142,31 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
   void onTap() {
     if (!isGameRunning || isJumping) return;
 
-    isJumping = true;
+    if (jumpCount < 2) {
+      isJumping = true; // Set jumping to true
+      jumpVelocity = -500; // Reset upward velocity for the jump
+      jumpCount++; // Increment jump count
+    }
   }
 
   void spawnObstacle() {
     if (!isGameRunning) return;
 
     final obstacle = Obstacle(sprite: obstacleSprite)
-      ..position = Vector2(size.x, size.y - 90)
+      ..position = Vector2(size.x, size.y - 80)
       ..size = Vector2(40, 40);
     add(obstacle);
   }
 
   // Start the game
   void startGame() {
-    overlays.remove('startMenu'); // Remove start menu
-    overlays.add('score'); // Add score overlay
-    overlays.add('health'); // Add health overlay
+    overlays.remove('startMenu');
+    overlays.add('score');
+    overlays.add('health');
+    overlays.add('pauseButton');
     isGameRunning = true;
-    score.value = 0; // Reset score
-    lives.value = 3; // Reset lives
+    score.value = 0;
+    lives.value = 3;
   }
 
   // Pause the game
@@ -196,18 +206,25 @@ class FantasyRun extends FlameGame with TapDetector, HasCollisionDetection {
     score.value = 0;
     lives.value = 3;
 
-    // Remove the player and any other components (e.g., obstacles)
-    remove(player); // Remove the player
-    children.whereType<Obstacle>().forEach(remove); // Remove all obstacles
+    // Remove all obstacles and other children from the game
+    final componentsToRemove = children.toList();
+    for (var component in componentsToRemove) {
+      remove(component);
+    }
 
-    // Reinitialize the game state
-    onLoad();
+    // Reset time-related variables
+    timeTrack = 0.00;
+    timeStamp = 0;
 
-    // Show the start menu overlay
-    overlays.add('startMenu');
-    overlays.remove('pauseMenu');
+    // Reset player state
+    isJumping = false;
+    jumpVelocity = -500;
+    gravity = 800;
 
-    // Set game state to not running
+    // Reset game state variables
     isGameRunning = false;
+
+    // Reload the game from scratch
+    onLoad();
   }
 }

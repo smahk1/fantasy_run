@@ -3,10 +3,12 @@ import 'package:flame/collisions.dart';
 import 'package:fantasy_run/fantasy_run.dart';
 
 class Obstacle extends SpriteComponent with CollisionCallbacks, HasGameRef {
-  final double speed = 100; // Speed of the obstacle's horizontal movement
+  final double speed = 200; // Speed of the obstacle's horizontal movement
 
   Obstacle({required Sprite sprite}) {
     this.sprite = sprite; // Assign the sprite for the obstacle
+    size = Vector2(40, 40); // Set default size for obstacles
+    anchor = Anchor.center; // Ensure hitbox alignment
     add(RectangleHitbox()); // Add a rectangular hitbox for collision detection
   }
 

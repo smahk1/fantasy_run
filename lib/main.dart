@@ -3,18 +3,28 @@ import 'package:fantasy_run/fantasy_run.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/flame.dart';
-import 'package:flutter/foundation.dart';
 
 void main() {
-  FantasyRun fantasyRun = FantasyRun();
-
+  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Create the game instance
+  FantasyRun fantasyRun = FantasyRun();
+
+  // Set the app to fullscreen and landscape mode
   Flame.device.fullScreen();
   Flame.device.setLandscape();
 
-  runApp(GameWidget(
-    game: kDebugMode ? FantasyRun() : fantasyRun,
-    overlayBuilderMap: overlays,
-  ));
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light(),
+      home: Scaffold(
+        body: GameWidget(
+          game: fantasyRun,
+          overlayBuilderMap: overlays,
+        ),
+      ),
+    ),
+  );
 }

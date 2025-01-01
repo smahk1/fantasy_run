@@ -50,134 +50,182 @@ final Map<String, Widget Function(BuildContext, Game)> overlays = {
       ),
     );
   },
-
   'signIn': (context, game) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        width: 300,
-        height: 350,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Sign In',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.white,
-                fontFamily: 'arcadeclassic',
+    final FantasyRun fantasyRun = game as FantasyRun;
+
+    return Material(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          width: 300,
+          height: 400, // Increased height to fit the "Back to Home" button
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Sign In',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontFamily: 'arcadeclassic',
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Email',
-                hintStyle: TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Password',
-                hintStyle: TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => const AlertDialog(
-                    content: Text(
-                      'You have signed in successfully!',
-                      style: TextStyle(color: Colors.green),
-                    ),
+              const SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Email',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                );
-              },
-              child: const Text('Sign In'),
-            ),
-          ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => const AlertDialog(
+                      content: Text(
+                        'You have signed in successfully!',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Sign In'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  // Go back to the home screen
+                  fantasyRun.overlays.add('startMenu');
+                  fantasyRun.overlays.remove('signIn');
+                },
+                child: const Text('Back to Home'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   },
-
-  // Sign Up Overlay
   'signUp': (context, game) {
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.8),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        width: 300,
-        height: 350,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Sign Up',
-              style: TextStyle(
-                fontSize: 24,
-                color: Colors.white,
-                fontFamily: 'arcadeclassic',
+    final FantasyRun fantasyRun = game as FantasyRun;
+
+    return Material(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          width: 300,
+          height: 400, // Increased height to fit the "Back to Home" button
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Sign Up',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontFamily: 'arcadeclassic',
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Email',
-                hintStyle: TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Password',
-                hintStyle: TextStyle(color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(),
-              ),
-              obscureText: true,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => const AlertDialog(
-                    content: Text(
-                      'You have registered successfully!',
-                      style: TextStyle(color: Colors.green),
-                    ),
+              const SizedBox(height: 20),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Email',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                );
-              },
-              child: const Text('Register'),
-            ),
-          ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => const AlertDialog(
+                      content: Text(
+                        'You have registered successfully!',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Register'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  // Go back to the home screen
+                  fantasyRun.overlays.add('startMenu');
+                  fantasyRun.overlays.remove('signUp');
+                },
+                child: const Text('Back to Home'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   },
-
   'startMenu': (context, game) {
     final FantasyRun fantasyRun = game as FantasyRun;
 
@@ -234,7 +282,7 @@ final Map<String, Widget Function(BuildContext, Game)> overlays = {
     final FantasyRun fantasyRun = game as FantasyRun;
 
     return Positioned(
-      top: 20,
+      top: 80, // Adjust the top position to move it below the score overlay
       right: 30,
       child: GestureDetector(
         onTap: () {
@@ -242,7 +290,7 @@ final Map<String, Widget Function(BuildContext, Game)> overlays = {
               .pauseGame(); // Call pauseGame() to pause the game and show the pause menu
         },
         child: Image.asset(
-          'assets/pause_icon.png', // Your sprite/image for the pause button
+          'assets/images/pauseButton.png', // Your sprite/image for the pause button
           width: 50,
           height: 50,
         ),
