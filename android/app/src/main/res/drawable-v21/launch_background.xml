@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!--
+   Splash screen definition using a layer-list.
+   1) A background shape with optional gradient or solid color.
+   2) An optional centered bitmap for a logo or launch image.
+   Customize to suit your design.
+-->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="?android:colorBackground" />
 
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
+    <!-- Background layer: either a solid color or a gradient shape. -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- Example gradient. Replace @color/splash_* with your own color resources. -->
+            <gradient
+                android:startColor="@color/splash_start"
+                android:centerColor="@color/splash_center"
+                android:endColor="@color/splash_end"
+                android:angle="90" />
+        </shape>
+    </item>
+
+    <!-- 
+       Optional second layer: a centered image/logo.
+       Uncomment and set your mipmap or drawable resource.
+    -->
+    <!--
+    <item>
         <bitmap
             android:gravity="center"
             android:src="@mipmap/launch_image" />
-    </item> -->
+    </item>
+    -->
+
 </layer-list>
