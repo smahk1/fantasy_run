@@ -1,5 +1,5 @@
 # Fantasy Run
-A group project in Flame/Flutter
+An (abandoned) group project in Flame/Flutter
 
 ## OVERVIEW:
 An endless runner game with switching environments, evolving enemies, and changing maps. 
